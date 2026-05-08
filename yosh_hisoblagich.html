@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yosh Hisoblagich</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+JP:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #0a0a0a;
+      --paper: #fffdf4;
+      --red: #e8192c;
+      --yellow: #ffd700;
+      --blue: #1a3a8f;
+      --panel-border: 4px solid #0a0a0a;
+      --shadow: 6px 6px 0px #0a0a0a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--paper);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.06) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.04) 40px);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--ink);
+      padding: 10px 0 6px;
+      text-align: center;
+      border-bottom: 5px solid var(--red);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(255,215,0,0.07) 8px,
+        rgba(255,215,0,0.07) 16px
+      );
+    }
+    .dev-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--ink);
+      font-family: 'Bangers', cursive;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      padding: 2px 14px;
+      border-radius: 2px;
+      border: 2px solid var(--ink);
+      margin-bottom: 4px;
+      transform: rotate(-1deg);
+    }
+    header h1 {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      color: #fff;
+      letter-spacing: 4px;
+      text-shadow: 3px 3px 0 var(--red);
+      line-height: 1;
+    }
+    header h1 span { color: var(--yellow); }
+    .dev-name {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* SPEED LINES BG */
+    .speed-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.035;
+    }
+    .speed-bg svg { width: 100%; height: 100%; }
+
+    /* MAIN */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 16px 50px;
+      display: grid;
+      gap: 20px;
+    }
+
+    /* PANEL */
+    .panel {
+      background: #fff;
+      border: var(--panel-border);
+      box-shadow: var(--shadow);
+      padding: 24px 28px;
+      position: relative;
+    }
+    .panel-label {
+      position: absolute;
+      top: -14px;
+      left: 18px;
+      background: var(--red);
+      color: #fff;
+      font-family: 'Bangers', cursive;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      padding: 2px 12px;
+      border: 2px solid var(--ink);
+    }
+
+    /* INPUT SECTION */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 14px;
+      align-items: end;
+      margin-top: 8px;
+    }
+    @media(max-width: 580px) {
+      .input-grid { grid-template-columns: 1fr 1fr; }
+      .input-grid .btn-calc { grid-column: 1/-1; }
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 3px solid var(--ink);
+      font-family: 'Bangers', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      background: var(--paper);
+      outline: none;
+      transition: box-shadow .15s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { box-shadow: 4px 4px 0 var(--blue); }
+
+    .btn-calc {
+      background: var(--red);
+      color: #fff;
+      border: 3px solid var(--ink);
+      font-family: 'Bangers', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      padding: 12px 22px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--ink);
+      transition: transform .1s, box-shadow .1s;
+      white-space: nowrap;
+    }
+    .btn-calc:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+    .btn-calc:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--ink); }
+
+    /* ERROR */
+    .error-msg {
+      display: none;
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .error-msg.show { display: block; }
+
+    /* RESULT SECTION */
+    #result-panel { display: none; }
+    #result-panel.show { display: block; }
+
+    .big-age {
+      font-family: 'Bangers', cursive;
+      font-size: clamp(4rem, 18vw, 9rem);
+      color: var(--ink);
+      line-height: 1;
+      text-shadow: 6px 6px 0 var(--yellow), 8px 8px 0 var(--red);
+      letter-spacing: 4px;
+      text-align: center;
+      animation: popIn .4s cubic-bezier(.36,.07,.19,.97);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+      80% { transform: scale(1.08) rotate(1deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .age-label {
+      text-align: center;
+      font-family: 'Bangers', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      color: var(--blue);
+      margin-top: -6px;
+      margin-bottom: 18px;
+    }
+
+    /* STATS GRID */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .stat-box {
+      border: 3px solid var(--ink);
+      padding: 12px 10px 10px;
+      text-align: center;
+      position: relative;
+      background: var(--paper);
+      transition: transform .2s;
+    }
+    .stat-box:hover { transform: translateY(-3px); }
+    .stat-box:nth-child(1) { background: #fff0f0; }
+    .stat-box:nth-child(2) { background: #f0f0ff; }
+    .stat-box:nth-child(3) { background: #fffff0; }
+    .stat-box:nth-child(4) { background: #f0fff0; }
+    .stat-box:nth-child(5) { background: #fff0ff; }
+    .stat-box:nth-child(6) { background: #f0ffff; }
+    .stat-num {
+      font-family: 'Bangers', cursive;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      color: var(--ink);
+    }
+    .stat-desc {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* LIVE TICKER */
+    .live-box {
+      border: 3px solid var(--ink);
+      background: var(--ink);
+      color: var(--yellow);
+      font-family: 'Bangers', cursive;
+      font-size: clamp(1rem, 4vw, 1.5rem);
+      letter-spacing: 3px;
+      padding: 14px 18px;
+      text-align: center;
+      margin-top: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: blink 1s infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* MANGA BUBBLE */
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-radius: 0;
+      padding: 12px 18px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-top-color: var(--ink);
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 7px solid transparent;
+      border-top-color: #fff;
+      z-index: 1;
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      margin-top: 16px;
+      border: 3px solid var(--ink);
+      height: 28px;
+      background: var(--paper);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        var(--red),
+        var(--red) 10px,
+        #c0001c 10px,
+        #c0001c 20px
+      );
+      transition: width 1s;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+    }
+    .progress-label {
+      font-family: 'Bangers', cursive;
+      font-size: 0.85rem;
+      color: #fff;
+      letter-spacing: 1px;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink);
+    }
+    .progress-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border-top: 3px solid var(--ink);
+      margin-top: 10px;
+    }
+    footer span { color: var(--red); }
+
+    /* HALFTONE corner */
+    .halftone {
+      position: absolute;
+      width: 80px; height: 80px;
+      top: -10px; right: -10px;
+      opacity: 0.08;
+      background-image: radial-gradient(circle, #000 1.5px, transparent 1.5px);
+      background-size: 8px 8px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Speed lines background -->
+<div class="speed-bg">
+  <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="rg" cx="50%" cy="50%">
+        <stop offset="0%" stop-color="black" stop-opacity="0"/>
+        <stop offset="100%" stop-color="black" stop-opacity="1"/>
+      </radialGradient>
+    </defs>
+    <g id="lines"></g>
+  </svg>
+</div>
+
+<header>
+  <div class="dev-badge">⚡ DEVELOPER ⚡</div>
+  <h1>YOSH <span>HISOBLAGICH</span></h1>
+  <div class="dev-name">Rahmonov Muhammadsodiq</div>
+</header>
+
+<main>
+  <!-- INPUT PANEL -->
+  <div class="panel">
+    <div class="panel-label">// KIRITING</div>
+    <div class="halftone"></div>
+    <div class="input-grid" style="margin-top:18px">
+      <div>
+        <label>🗓 Kun</label>
+        <input type="number" id="day" placeholder="KUN" min="1" max="31"/>
+      </div>
+      <div>
+        <label>📅 Oy</label>
+        <input type="number" id="month" placeholder="OY" min="1" max="12"/>
+      </div>
+      <div>
+        <label>📆 Yil</label>
+        <input type="number" id="year" placeholder="YIL" min="1900" max="2025"/>
+      </div>
+      <div class="btn-calc">
+        <button class="btn-calc" onclick="calculate()" style="width:100%">HISOBLA !</button>
+      </div>
+    </div>
+    <div class="error-msg" id="error">⚠️ Iltimos, to'g'ri sana kiriting!</div>
+  </div>
+
+  <!-- RESULT PANEL -->
+  <div class="panel" id="result-panel">
+    <div class="panel-label">// NATIJA</div>
+    <div class="halftone"></div>
+    <div style="margin-top:12px">
+      <div class="big-age" id="big-age">0</div>
+      <div class="age-label">YOSHDASIZ</div>
+
+      <!-- Speech bubble -->
+      <div class="speech-bubble" id="msg-bubble">—</div>
+      <br/>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-months">0</div>
+          <div class="stat-desc">Oy</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-weeks">0</div>
+          <div class="stat-desc">Hafta</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-days">0</div>
+          <div class="stat-desc">Kun</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-hours">0</div>
+          <div class="stat-desc">Soat</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-minutes">0</div>
+          <div class="stat-desc">Daqiqa</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-seconds">0</div>
+          <div class="stat-desc">Soniya</div>
+        </div>
+      </div>
+
+      <!-- Progress to next birthday -->
+      <div class="progress-title">🎂 KEYINGI TASHKILOT UCHUN PROGRESS:</div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+        <span class="progress-label" id="prog-label">0%</span>
+      </div>
+
+      <!-- Live ticker -->
+      <div class="live-box">
+        <span class="live-dot"></span>
+        REAL VAQT: <span id="live-time">--:--:--</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 — DEVELOPED BY <span>RAHMONOV MUHAMMADSODIQ</span> — ALL RIGHTS RESERVED
+</footer>
+
+<script>
+  // Draw speed lines
+  const linesEl = document.getElementById('lines');
+  const cx = 500, cy = 300;
+  for (let i = 0; i < 60; i++) {
+    const angle = (i / 60) * Math.PI * 2;
+    const x1 = cx + Math.cos(angle) * 30;
+    const y1 = cy + Math.sin(angle) * 30;
+    const x2 = cx + Math.cos(angle) * 800;
+    const y2 = cy + Math.sin(angle) * 800;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', 'black');
+    line.setAttribute('stroke-width', Math.random() * 1.5 + 0.5);
+    linesEl.appendChild(line);
+  }
+
+  let birthDate = null;
+  let ticker = null;
+
+  const messages = [
+    "Siz juda ajoyib odamsiz! 🌟",
+    "Har bir kun — yangi imkoniyat! ⚡",
+    "Manga qahramoni kabi kuchli! 💪",
+    "Yoshligingiz — kuchingiz! 🔥",
+    "Ulug' ishlar siz bilan boshlanadi! ✨",
+    "Davom eting, to'xtamang! 🚀",
+  ];
+
+  function fmt(n) {
+    if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
+    if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+    if (n >= 1e3) return Math.round(n/1e3)+'K';
+    return Math.round(n).toLocaleString('uz');
+  }
+
+  function calculate() {
+    const d = parseInt(document.getElementById('day').value);
+    const m = parseInt(document.getElementById('month').value);
+    const y = parseInt(document.getElementById('year').value);
+    const err = document.getElementById('error');
+
+    if (!d || !m || !y || d<1||d>31||m<1||m>12||y<1900||y>new Date().getFullYear()) {
+      err.classList.add('show');
+      document.getElementById('result-panel').classList.remove('show');
+      return;
+    }
+    err.classList.remove('show');
+
+    birthDate = new Date(y, m-1, d);
+    if (birthDate > new Date()) {
+      err.textContent = '⚠️ Tug\'ilgan sana kelajakda bo\'lishi mumkin emas!';
+      err.classList.add('show');
+      return;
+    }
+    err.textContent = '⚠️ Iltimos, to\'g\'ri sana kiriting!';
+
+    document.getElementById('result-panel').classList.add('show');
+    document.getElementById('result-panel').scrollIntoView({behavior:'smooth'});
+    document.getElementById('msg-bubble').textContent = messages[Math.floor(Math.random()*messages.length)];
+
+    if (ticker) clearInterval(ticker);
+    updateAll();
+    ticker = setInterval(updateAll, 1000);
+  }
+
+  function updateAll() {
+    const now = new Date();
+    const diff = now - birthDate; // ms
+
+    const totalSec = diff / 1000;
+    const totalMin = totalSec / 60;
+    const totalHours = totalMin / 60;
+    const totalDays = totalHours / 24;
+    const totalWeeks = totalDays / 7;
+    const totalMonths = totalDays / 30.4375;
+    const totalYears = totalDays / 365.25;
+
+    const years = Math.floor(totalYears);
+    const months = Math.floor(totalMonths);
+    const weeks = Math.floor(totalWeeks);
+    const days = Math.floor(totalDays);
+    const hours = Math.floor(totalHours);
+    const minutes = Math.floor(totalMin);
+    const seconds = Math.floor(totalSec);
+
+    document.getElementById('big-age').textContent = years;
+    document.getElementById('stat-months').textContent = fmt(months);
+    document.getElementById('stat-weeks').textContent = fmt(weeks);
+    document.getElementById('stat-days').textContent = fmt(days);
+    document.getElementById('stat-hours').textContent = fmt(hours);
+    document.getElementById('stat-minutes').textContent = fmt(minutes);
+    document.getElementById('stat-seconds').textContent = fmt(seconds);
+
+    // Progress to next birthday
+    const lastBday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+    if (lastBday > now) lastBday.setFullYear(now.getFullYear()-1);
+    const nextBday = new Date(lastBday.getFullYear()+1, birthDate.getMonth(), birthDate.getDate());
+    const yearSpan = nextBday - lastBday;
+    const elapsed = now - lastBday;
+    const pct = Math.min(100, Math.round((elapsed/yearSpan)*100));
+    document.getElementById('prog-fill').style.width = pct+'%';
+    document.getElementById('prog-label').textContent = pct+'%';
+
+    // Live clock
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('live-time').textContent = `${hh}:${mm}:${ss}`;
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', e => { if(e.key==='Enter') calculate(); });
+</script>
+</body>
+</html>
